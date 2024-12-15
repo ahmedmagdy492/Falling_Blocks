@@ -8,13 +8,13 @@ extern "C" {
 #include <vector>
 #include <algorithm>
 
-double Tetrominos::ConvertDegreesToRadians(int deg)
+double Tetromino::ConvertDegreesToRadians(int deg)
 {
 	return deg * (PI / 180.0f);
 }
 
-float Tetrominos::GetMinXValue() {
-	float minXValue = INT_MAX;
+float Tetromino::GetMinXValue() {
+	float minXValue = squares[0].x;
 	for (int i = 0; i < squaresCount; ++i) {
 		if (squares[i].x < minXValue) {
 			minXValue = squares[i].x;
@@ -24,10 +24,10 @@ float Tetrominos::GetMinXValue() {
 	return minXValue;
 }
 
-float Tetrominos::GetMaxXValue() {
-	float maxXValue = INT_MIN;
+float Tetromino::GetMaxXValue() {
+	float maxXValue = squares[0].x;
 	for (int i = 0; i < squaresCount; ++i) {
-		if (squares[i].x > maxXValue) {
+		if (squares[i].x >= maxXValue) {
 			maxXValue = squares[i].x;
 		}
 	}
@@ -35,18 +35,29 @@ float Tetrominos::GetMaxXValue() {
 	return maxXValue;
 }
 
-Vector2 Tetrominos::CalculateCenteroidPoint() {
-	float xSum = 0.0f, ySum = 0.0f;
-
+float Tetromino::GetMinYValue() {
+	float minYValue = squares[0].y;
 	for (int i = 0; i < squaresCount; ++i) {
-		xSum += squares[i].x;
-		ySum += squares[i].y;
+		if (squares[i].y < minYValue) {
+			minYValue = squares[i].y;
+		}
 	}
 
-	return { xSum / squaresCount, ySum / squaresCount };
+	return minYValue;
 }
 
-Tetrominos::Tetrominos(ShapeType shapeType, unsigned char color, float initX, float initY) :
+float Tetromino::GetMaxYValue() {
+	float maxYValue = squares[0].y;
+	for (int i = 0; i < squaresCount; ++i) {
+		if (squares[i].y >= maxYValue) {
+			maxYValue = squares[i].y;
+		}
+	}
+
+	return maxYValue;
+}
+
+Tetromino::Tetromino(ShapeType shapeType, Color color, float initX, float initY) :
 	color(color), shapeType(shapeType) {
 	size = { Constants::blockWidthInPixels, Constants::blockWidthInPixels };
 	switch (shapeType) {
@@ -56,6 +67,7 @@ Tetrominos::Tetrominos(ShapeType shapeType, unsigned char color, float initX, fl
 		squares[1] = { initX, initY };
 		initY += Constants::blockWidthInPixels;
 		squares[2] = { initX, initY };
+		centerPiece = &squares[1];
 		initX += Constants::blockWidthInPixels;
 		squares[3] = { initX, initY };
 		break;
@@ -64,6 +76,7 @@ Tetrominos::Tetrominos(ShapeType shapeType, unsigned char color, float initX, fl
 		squares[0] = { initX, initY };
 		initX += Constants::blockWidthInPixels;
 		squares[1] = { initX, initY };
+		centerPiece = &squares[1];
 		initY -= Constants::blockWidthInPixels;
 		squares[2] = { initX, initY };
 		initX += Constants::blockWidthInPixels;
@@ -73,6 +86,7 @@ Tetrominos::Tetrominos(ShapeType shapeType, unsigned char color, float initX, fl
 		squares[0] = { initX, initY };
 		initY += Constants::blockWidthInPixels;
 		squares[1] = { initX, initY };
+		centerPiece = &squares[1];
 		initY += Constants::blockWidthInPixels;
 		squares[2] = { initX, initY };
 		initX += Constants::blockWidthInPixels;
@@ -82,6 +96,7 @@ Tetrominos::Tetrominos(ShapeType shapeType, unsigned char color, float initX, fl
 		squares[0] = { initX, initY };
 		initY += Constants::blockWidthInPixels;
 		squares[1] = { initX, initY };
+		centerPiece = &squares[1];
 		initY += Constants::blockWidthInPixels;
 		squares[2] = { initX, initY };
 		initX -= Constants::blockWidthInPixels;
@@ -100,6 +115,7 @@ Tetrominos::Tetrominos(ShapeType shapeType, unsigned char color, float initX, fl
 		squares[0] = { initX, initY };
 		initY += Constants::blockWidthInPixels;
 		squares[1] = { initX, initY };
+		centerPiece = &squares[1];
 		initY += Constants::blockWidthInPixels;
 		squares[2] = { initX, initY };
 		initY += Constants::blockWidthInPixels;
@@ -109,6 +125,7 @@ Tetrominos::Tetrominos(ShapeType shapeType, unsigned char color, float initX, fl
 		squares[0] = { initX, initY };
 		initX += Constants::blockWidthInPixels;
 		squares[1] = { initX, initY };
+		centerPiece = &squares[1];
 		initX += Constants::blockWidthInPixels;
 		squares[2] = { initX, initY };
 		initX -= Constants::blockWidthInPixels;
@@ -118,69 +135,133 @@ Tetrominos::Tetrominos(ShapeType shapeType, unsigned char color, float initX, fl
 	}
 }
 
-void Tetrominos::Draw() {
+void Tetromino::Draw() {
 	for (int i = 0; i < squaresCount; ++i) {
-		DrawRectangleV(squares[i], size, RED);
+		DrawRectangleV(squares[i], size, color);
 		DrawRectangleLines(squares[i].x, squares[i].y, Constants::blockWidthInPixels, Constants::blockWidthInPixels, BLACK);
 	}
 }
 
-void Tetrominos::Move(float speed, BlocksMoveDirection dir) {
+bool Tetromino::IsSquareOverlapWithAnyOtherSquare(Vector2 squarePos, std::vector<Vector2>& existingSquares) {
+	for (const Vector2& sq : existingSquares) {
+		Rectangle boundTargetSquare = { squarePos.x, squarePos.y, Constants::blockWidthInPixels, Constants::blockWidthInPixels };
+		Rectangle boundCurSquare = { sq.x, sq.y, Constants::blockWidthInPixels, Constants::blockWidthInPixels };
+
+		if (CheckCollisionRecs(boundTargetSquare, boundCurSquare)) {
+			return true;
+		}
+	}
+
+	return false;
+}
+
+bool Tetromino::Move(float speed, BlocksMoveDirection dir, std::vector<Vector2>& existingSquares) {
 	switch (dir) {
 	case BlocksMoveDirection::MoveLeft: {
 		float minXValue = GetMinXValue();
 
 		if ((minXValue - Constants::blockWidthInPixels) >= 0) {
 			for (int i = 0; i < squaresCount; ++i) {
+				if (IsSquareOverlapWithAnyOtherSquare({ squares[i].x - Constants::blockWidthInPixels, squares[i].y }, existingSquares)) {
+					return false;
+				}
+			}
+
+			for (int i = 0; i < squaresCount; ++i) {
 				squares[i].x = squares[i].x - Constants::blockWidthInPixels;
 			}
+		}
+		else {
+			return false;
 		}
 		break;
 	}
 	case BlocksMoveDirection::MoveRight: {
 		float maxXValue = GetMaxXValue();
 
-		if ((maxXValue + Constants::blockWidthInPixels) < Constants::width) {
+		if ((maxXValue + Constants::blockWidthInPixels) < Constants::boardWidth) {
+			for (int i = 0; i < squaresCount; ++i) {
+				if (IsSquareOverlapWithAnyOtherSquare({ squares[i].x + Constants::blockWidthInPixels, squares[i].y }, existingSquares)) {
+					return false;
+				}
+			}
+
 			for (int i = 0; i < squaresCount; ++i) {
 				squares[i].x = squares[i].x + Constants::blockWidthInPixels;
 			}
 		}
+		else {
+			return false;
+		}
+		break;
+	}
+	case BlocksMoveDirection::MoveDown: {
+		float maxYValue = GetMaxYValue();
+		if ((maxYValue + Constants::blockWidthInPixels) < Constants::boardHeight) {
+			for (int i = 0; i < squaresCount; ++i) {
+				if (IsSquareOverlapWithAnyOtherSquare({ squares[i].x, squares[i].y + Constants::blockWidthInPixels }, existingSquares)) {
+					return false;
+				}
+			}
+
+			for (int i = 0; i < squaresCount; ++i) {
+				squares[i].y = squares[i].y + Constants::blockWidthInPixels;
+			}
+		}
+		else {
+			return false;
+		}
 		break;
 	}
 	}
+
+	return true;
 }
 
-void Tetrominos::Rotate() {
+void Tetromino::Rotate(std::vector<Vector2>& existingSquares) {
 	if (shapeType == ShapeType::OShape)
 		return;
 
-	std::vector<float> xValues, yValues;
+	Vector2 tempSquares[4];
 
 	for (int i = 0; i < squaresCount; ++i) {
-		xValues.push_back(squares[i].x);
-		yValues.push_back(squares[i].y);
-	}
-
-	std::sort(xValues.begin(), xValues.end());
-	std::sort(yValues.begin(), yValues.end());
-
-	float midX = Lerp(xValues[1], xValues[2], 0.5);
-	float midY = Lerp(yValues[1], yValues[2], 0.5);
-
-	if (lastRotationAngle < 360) {
-		lastRotationAngle += Constants::roationAmount;
-	}
-	else {
-		lastRotationAngle = 0;
+		tempSquares[i] = { squares[i].x, squares[i].y };
 	}
 
 	for (int i = 0; i < squaresCount; ++i) {
-		Matrix transMat = MatrixTranslate(-midX, -midY, 0.0f);
-		squares[i] = Vector2Transform(squares[i], transMat);
+		Matrix transMat = MatrixTranslate(-(*centerPiece).x, -(*centerPiece).y, 0.0f);
+		tempSquares[i] = Vector2Transform({ tempSquares[i].x, tempSquares[i].y }, transMat);
 		double rotationAngleInRad = ConvertDegreesToRadians(Constants::roationAmount);
 		Matrix rotateMat = MatrixRotateZ(rotationAngleInRad);
-		squares[i] = Vector2Transform(squares[i], rotateMat);
-		Matrix transBackMat = MatrixTranslate(midX, midY, 0.0f);
-		squares[i] = Vector2Transform(squares[i], transBackMat);
+		tempSquares[i] = Vector2Transform(tempSquares[i], rotateMat);
+		Matrix transBackMat = MatrixTranslate((*centerPiece).x, (*centerPiece).y, 0.0f);
+		tempSquares[i] = Vector2Transform(tempSquares[i], transBackMat);
+	}
+
+	// collision detection with other tetrominos
+	for (int i = 0; i < squaresCount; ++i) {
+		if (
+			IsSquareOverlapWithAnyOtherSquare({ tempSquares[i].x, tempSquares[i].y }, existingSquares) 
+			|| IsSquareOverlapWithAnyOtherSquare({ tempSquares[i].x + Constants::blockWidthInPixels, tempSquares[i].y }, existingSquares) 
+			|| IsSquareOverlapWithAnyOtherSquare({ tempSquares[i].x, tempSquares[i].y + Constants::blockWidthInPixels }, existingSquares)
+			|| IsSquareOverlapWithAnyOtherSquare({ tempSquares[i].x + Constants::blockWidthInPixels, tempSquares[i].y + Constants::blockWidthInPixels }, existingSquares)
+			) {
+			return;
+		}
+	}
+
+	// collision detection with window boundaries
+	for (int i = 0; i < squaresCount; ++i) {
+		if (tempSquares[i].x > Constants::boardWidth || (tempSquares[i].x + Constants::blockWidthInPixels) > Constants::boardWidth || tempSquares[i].x < 0) {
+			return;
+		}
+		if (tempSquares[i].y > Constants::boardHeight || (tempSquares[i].y + Constants::blockWidthInPixels) > Constants::boardHeight) {
+			return;
+		}
+	}
+
+	for (int i = 0; i < squaresCount; ++i) {
+		squares[i].x = tempSquares[i].x;
+		squares[i].y = tempSquares[i].y;
 	}
 }
