@@ -23,12 +23,13 @@ int main() {
 		case KEY_D:
 			game.MoveActiveTet(BlocksMoveDirection::MoveRight);
 			break;
-		case KEY_S:
-			game.MoveActiveTet(BlocksMoveDirection::MoveDown);
-			break;
 		case KEY_W:
 			game.RotateActiveTet();
 			break;
+		}
+
+		if (IsKeyDown(KEY_S)) {
+			game.MoveActiveTet(BlocksMoveDirection::MoveDown);
 		}
 
 		BeginDrawing();

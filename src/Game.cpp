@@ -40,28 +40,9 @@ ShapeType Game::GenerateNextTetromino() {
 	return shapesBag[i++];
 }
 
-Color Game::GetColorBasedOnShapeType(ShapeType shapeType) {
-	switch (shapeType) {
-	case ShapeType::IShape:
-		return SKYBLUE;
-	case ShapeType::JShape:
-		return BLUE;
-	case ShapeType::LShape:
-		return ORANGE;
-	case ShapeType::OShape:
-		return YELLOW;
-	case ShapeType::SShape:
-		return DARKGREEN;
-	case ShapeType::ZShape:
-		return RED;
-	}
-
-	return MAGENTA;
-}
-
 Tetromino* Game::CreateTetromino() {
 	ShapeType generatedShape = GenerateNextTetromino();
-	return new Tetromino(generatedShape, GetColorBasedOnShapeType(generatedShape), Constants::tetInitialPositionX, Constants::tetInitialPositionY);
+	return new Tetromino(ShapeType::IShape, GetColorBasedOnShapeType(generatedShape), Constants::tetInitialPositionX, Constants::tetInitialPositionY);
 }
 
 void Game::StartGame() {
@@ -118,6 +99,72 @@ void Game::DrawSquares() {
 		DrawRectangle((int)sq.x, (int)sq.y, Constants::blockWidthInPixels, Constants::blockWidthInPixels, defaultSquaresColor);
 		DrawRectangleLines((int)sq.x, (int)sq.y, Constants::blockWidthInPixels, Constants::blockWidthInPixels, BLACK);
 	}
+}
+
+void Game::ClearCompeleteLine(std::set<float>& xValues, float maxYValue) {
+	Vector2 deletedVector = { -1, -1 };
+
+	std::vector<float> curXValues(xValues.begin(), xValues.end());
+
+	for (int j = 0; j < curXValues.size(); ++j) {
+		Vector2 valueToSearchFor = { curXValues[j], maxYValue };
+
+		unsigned int foundVecIndex = FindValueInList(squares, valueToSearchFor);
+
+		if (foundVecIndex != -1) {
+			// remove the square from the list of squares
+			deletedVector = squares[foundVecIndex];
+			squaresToRemove.push_back(std::pair<float, float>(valueToSearchFor.x, valueToSearchFor.y));
+		}
+	}
+}
+
+void Game::ClearCompletedLineIfThereAny() {
+	std::map<float, std::set<float>> yToXValues;
+
+	for (int i = 0; i < squares.size(); ++i) {
+		yToXValues[squares[i].y].insert(squares[i].x);
+	}
+
+	unsigned char noClearedLines = 0;
+	std::vector<float> clearedYValues;
+	for (auto& keyValue : yToXValues) {
+		int curSize = keyValue.second.size();
+		if (curSize == Constants::blocksPerCompleteLine) {
+			clearedYValues.push_back(keyValue.first);
+			std::set<float> setOfXValues = keyValue.second;
+			ClearCompeleteLine(setOfXValues, keyValue.first);
+			noClearedLines++;
+		}
+	}
+
+	// remove cleared squares
+	std::vector<Vector2> temp;
+	for (Vector2& vec : squares) {
+		temp.push_back(vec);
+	}
+	squares.clear();
+
+	for (Vector2& vec : temp) {
+		if (std::find(squaresToRemove.begin(), squaresToRemove.end(), std::pair<float, float>(vec.x, vec.y)) == squaresToRemove.end()) {
+			squares.push_back(vec);
+		}
+	}
+
+	temp.clear();
+	squaresToRemove.clear();
+
+	// shift down lines above cleared lines
+	if (noClearedLines > 0) {
+		float minClearedYValue = *std::min(clearedYValues.begin(), clearedYValues.end());
+		for (Vector2& vec : squares) {
+			if (vec.y < minClearedYValue) {
+				vec.y += Constants::blockWidthInPixels * noClearedLines;
+			}
+		}
+	}
+
+	IncreamentScore(noClearedLines);
 }
 
 Game::~Game() {

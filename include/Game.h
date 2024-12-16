@@ -3,8 +3,10 @@
 #include "Tetrominos.h"
 
 #include <iostream>
+#include <algorithm>
 #include <vector>
 #include <map>
+#include <list>
 #include <set>
 
 class Game {
@@ -12,6 +14,7 @@ private:
 	bool isPlaying;
 	Tetromino* activeTetromino;
 	std::vector<Vector2> squares;
+	std::list<std::pair<float, float>> squaresToRemove;
 	Color defaultSquaresColor = DARKGRAY;
 	unsigned int playerScore = 0;
 
@@ -19,6 +22,25 @@ private:
 
 	Tetromino* CreateTetromino();
 	void OnTetrominoTouchesGround();
+
+	inline Color GetColorBasedOnShapeType(ShapeType shapeType) const {
+		switch (shapeType) {
+		case ShapeType::IShape:
+			return SKYBLUE;
+		case ShapeType::JShape:
+			return BLUE;
+		case ShapeType::LShape:
+			return ORANGE;
+		case ShapeType::OShape:
+			return YELLOW;
+		case ShapeType::SShape:
+			return DARKGREEN;
+		case ShapeType::ZShape:
+			return RED;
+		}
+
+		return MAGENTA;
+	}
 
 public:
 	Game();
@@ -32,65 +54,36 @@ public:
 	}
 
 	inline unsigned int FindValueInList(std::vector<Vector2>& list, Vector2 value) {
-		for (int i = 0; i < list.size(); ++i) {
-			Vector2 vec = list[i];
+		int i = 0;
+		for (Vector2& vec : list) {
 			if (vec.x == value.x && vec.y == value.y) {
 				return i;
 			}
+			++i;
 		}
 
 		return -1;
 	}
 
-	inline void ClearCompletedLineIfThereAny() {
-		std::map<float, std::set<float>> yToXValues;
-
-		for (int i = 0; i < squares.size(); ++i) {
-			yToXValues[squares[i].y].insert(squares[i].x);
-		}
-
-		int maxCount = INT_MIN;
-		float maxYValue = -1;
-		for (int i = 0; i < squares.size(); ++i) {
-			int curSize = yToXValues[squares[i].y].size();
-			if (curSize >= maxCount) {
-				maxCount = curSize;
-				maxYValue = squares[i].y;
-			}
-		}
-
-		if (maxCount == Constants::blocksPerLine && maxYValue != -1) {
-			// clear the completed line
-			Vector2 deletedVector = { -1, -1 };
-			for (int i = 0; i < yToXValues[maxYValue].size(); ++i) {
-
-				std::vector<float> curXValues(yToXValues[maxYValue].begin(), yToXValues[maxYValue].end());
-
-				for (int j = 0; j < curXValues.size(); ++j) {
-					Vector2 valueToSearchFor = { curXValues[j], maxYValue };
-
-					unsigned int foundVecIndex = FindValueInList(squares, valueToSearchFor);
-
-					if (foundVecIndex != -1) {
-						// remove the square from the list of squares
-						deletedVector = squares[foundVecIndex];
-						squares.erase(squares.begin() + foundVecIndex);
-					}
-				}
-			}
-
-			if (deletedVector.x != -1 && deletedVector.y != -1) {
-				for (Vector2& vec : squares) {
-					if (vec.y < deletedVector.y) {
-						vec.y += Constants::blockWidthInPixels;
-					}
-				}
-			}
+	inline void IncreamentScore(unsigned char noClearedLines) {
+		switch (noClearedLines) {
+		case 1:
+			playerScore += Constants::singleScoreValue;
+			break;
+		case 2:
+			playerScore += Constants::doubleScoreValue;
+			break;
+		case 3:
+			playerScore += Constants::tripleScoreValue;
+			break;
+		case 4:
+			playerScore += Constants::tetrisScoreValue;
+			break;
 		}
 	}
 
-	Color GetColorBasedOnShapeType(ShapeType shapeType);
-
+	void ClearCompeleteLine(std::set<float>& xValues, float maxYValue);
+	void ClearCompletedLineIfThereAny();
 	void DrawActiveTet();
 	void DrawSquares();
 	void RotateActiveTet();

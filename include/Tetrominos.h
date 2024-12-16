@@ -15,7 +15,7 @@ struct Constants {
 	static const int boardHeight = 910;  // in pixels
 	static const int tetInitialPositionX = 175;
 	static const int tetInitialPositionY = 0;
-	static const int blocksPerLine = boardWidth / blockWidthInPixels;
+	static const int blocksPerCompleteLine = boardWidth / blockWidthInPixels;
 
 	// Score Calcuations
 	static const int singleScoreValue = 40;
