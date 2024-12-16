@@ -1,8 +1,3 @@
-extern "C" {
-	#include <raylib.h>
-	#include <raymath.h>
-}
-
 #include "../include/Game.h"
 #include "../include/Tetrominos.h"
 
@@ -12,6 +7,9 @@ extern "C" {
 
 Game::Game() 
 	: activeTetromino(nullptr), isPlaying(false), nextTetromino(ShapeType::OShape) {
+	sounds[0] = LoadSound("resources/line-clear.ogg");
+	sounds[1] = LoadSound("resources/game-over.ogg");
+	sounds[2] = LoadSound("resources/piece-down.ogg");
 }
 
 ShapeType Game::GenerateNextTetromino() {
@@ -179,21 +177,29 @@ void Game::ClearCompletedLineIfThereAny() {
 	temp.clear();
 	squaresToRemove.clear();
 
+	PlaySound(sounds[2]);
+
 	// shift down lines above cleared lines
 	if (noClearedLines > 0) {
+		std::cout << __LINE__ << ":GameClass::NoOfLinesCleared: " << static_cast<int>(noClearedLines) << std::endl;
 		float minClearedYValue = *std::min(clearedYValues.begin(), clearedYValues.end());
 		for (Vector2& vec : squares) {
 			if (vec.y < minClearedYValue) {
 				vec.y += Constants::blockWidthInPixels * noClearedLines;
 			}
 		}
-	}
 
-	IncreamentScore(noClearedLines);
+		IncreamentScore(noClearedLines);
+		PlaySound(sounds[0]);
+	}
 }
 
 Game::~Game() {
 	if (activeTetromino != nullptr) {
 		delete activeTetromino;
+	}
+
+	for (int i = 0; i < soundsCount; ++i) {
+		UnloadSound(sounds[i]);
 	}
 }

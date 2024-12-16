@@ -2,64 +2,41 @@ extern "C" {
 #include <raylib.h>
 }
 
-#include "../include/Tetrominos.h"
-#include "../include/Game.h"
+#include "../include/GameScene.h"
+#include "../include/SceneManager.h"
 
 int main() {
 	InitWindow(Constants::screenWidth, Constants::screenHeight, "Falling Blocks");
 	SetTargetFPS(60);
 
-	Game game;
-	game.StartGame();
+	Font font = LoadFont("resources/good timing bd.otf");
 
-	float fallTimer = 0.0f;
-	float fallInterval = 1.0f;
+	BeginDrawing();
+	ClearBackground(Color{ 26, 35, 126, 1 });
+	const char* myName = "Loading...";
+	Vector2 myNameSize = MeasureTextEx(font, myName, 24.0f, 0.0f);
+	DrawTextEx(font, myName, { (Constants::screenWidth - myNameSize.x) / 2, (Constants::screenHeight - myNameSize.y)/2 }, 24.0f, 0.0f, RAYWHITE);
+	EndDrawing();
+
+	InitAudioDevice();
+
+	GameScene gameScene;
+	gameScene.Init();
+	SceneManager sceneManager;
+
+	sceneManager.AddScene("GameScene", &gameScene);
 
 	while (!WindowShouldClose()) {
-		ClearBackground(BLACK);
-
-		switch(GetKeyPressed()) {
-		case KEY_A:
-			game.MoveActiveTet(BlocksMoveDirection::MoveLeft);
-			break;
-		case KEY_D:
-			game.MoveActiveTet(BlocksMoveDirection::MoveRight);
-			break;
-		case KEY_W:
-			game.RotateActiveTet();
-			break;
-		}
-
-		if (IsKeyDown(KEY_S)) {
-			fallInterval = 0.25f;
-		}
-		if (IsKeyUp(KEY_S)) {
-			fallInterval = 1.0f;
-		}
-
-		fallTimer += GetFrameTime();
-
-		if (fallTimer >= fallInterval) {
-			game.MoveActiveTet(BlocksMoveDirection::MoveDown);
-			fallTimer = 0.0f;
-		}
+		ClearBackground(Color{ 26, 35, 126, 1 });
 
 		BeginDrawing();
-
-		game.DrawActiveTet();
-
-		game.DrawSquares();
-
-		game.DrawNextTet();
-
-		DrawRectangleLines(0, 0, Constants::boardWidth, Constants::boardHeight, RAYWHITE);
-
-		const char* scoreText = TextFormat("Score: %i", game.GetPlayerScore());
-		Vector2 scoreTextSize = MeasureTextEx(GetFontDefault(), scoreText, Constants::textFontSize, 0.0f);
-		DrawText(scoreText, (Constants::screenWidth - scoreTextSize.x + Constants::boardWidth) / 2, 20, Constants::textFontSize, RAYWHITE);
-
+		sceneManager.RenderCurrentScene();
 		EndDrawing();
 	}
+
+	UnloadFont(font);
+
+	CloseAudioDevice();
 
 	CloseWindow();
 }

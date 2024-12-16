@@ -1,6 +1,7 @@
 #pragma once
 
 #include <vector>
+#include <raylib.h>
 
 struct Constants {
 	static const int screenWidth = 1080;

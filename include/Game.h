@@ -11,6 +11,8 @@
 
 class Game {
 private:
+	static const int soundsCount = 3;
+
 	bool isPlaying;
 	Tetromino* activeTetromino;
 	ShapeType nextTetromino;
@@ -18,6 +20,7 @@ private:
 	std::list<std::pair<float, float>> squaresToRemove;
 	Color defaultSquaresColor = DARKGRAY;
 	unsigned int playerScore = 0;
+	Sound sounds[soundsCount];
 
 	ShapeType GenerateNextTetromino();
 
