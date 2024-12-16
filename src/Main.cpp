@@ -50,11 +50,13 @@ int main() {
 
 		game.DrawSquares();
 
+		game.DrawNextTet();
+
 		DrawRectangleLines(0, 0, Constants::boardWidth, Constants::boardHeight, RAYWHITE);
 
 		const char* scoreText = TextFormat("Score: %i", game.GetPlayerScore());
 		Vector2 scoreTextSize = MeasureTextEx(GetFontDefault(), scoreText, Constants::textFontSize, 0.0f);
-		DrawText(scoreText, (Constants::screenWidth - scoreTextSize.x) / 2, 20, Constants::textFontSize, RAYWHITE);
+		DrawText(scoreText, (Constants::screenWidth - scoreTextSize.x + Constants::boardWidth) / 2, 20, Constants::textFontSize, RAYWHITE);
 
 		EndDrawing();
 	}

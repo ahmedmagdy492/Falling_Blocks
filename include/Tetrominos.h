@@ -45,14 +45,10 @@ private:
 	static const int squaresCount = 4;
 
 	double ConvertDegreesToRadians(int deg);
-
 	float GetMinXValue();
-
 	float GetMaxXValue();
-
 	float GetMaxYValue();
 	float GetMinYValue();
-
 	bool IsSquareOverlapWithAnyOtherSquare(Vector2 squarePos, std::vector<Vector2>& existingSquares);
 
 public:
@@ -65,8 +61,7 @@ public:
 	Tetromino(ShapeType shapeType, Color color, float initX, float initY);
 
 	void Draw();
-
 	bool Move(float speed, BlocksMoveDirection dir, std::vector<Vector2>& existingSquares);
-
 	void Rotate(std::vector<Vector2>& existingSquares);
+	static void CalculateSquareValuesBasedOnShapeType(Vector2** centerPiece, Vector2 squares[], ShapeType shapeType, float initX, float initY);
 };

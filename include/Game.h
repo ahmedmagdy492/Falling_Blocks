@@ -13,6 +13,7 @@ class Game {
 private:
 	bool isPlaying;
 	Tetromino* activeTetromino;
+	ShapeType nextTetromino;
 	std::vector<Vector2> squares;
 	std::list<std::pair<float, float>> squaresToRemove;
 	Color defaultSquaresColor = DARKGRAY;
@@ -20,7 +21,7 @@ private:
 
 	ShapeType GenerateNextTetromino();
 
-	Tetromino* CreateTetromino();
+	Tetromino* CreateTetromino(ShapeType shapeType);
 	void OnTetrominoTouchesGround();
 
 	inline Color GetColorBasedOnShapeType(ShapeType shapeType) const {
@@ -85,9 +86,11 @@ public:
 	void ClearCompeleteLine(std::set<float>& xValues, float maxYValue);
 	void ClearCompletedLineIfThereAny();
 	void DrawActiveTet();
+	void DrawNextTet();
 	void DrawSquares();
 	void RotateActiveTet();
 	void MoveActiveTet(BlocksMoveDirection dir);
+	unsigned int GetTetWidth(ShapeType type);
 
 	~Game();
 };

@@ -60,6 +60,10 @@ float Tetromino::GetMaxYValue() {
 Tetromino::Tetromino(ShapeType shapeType, Color color, float initX, float initY) :
 	color(color), shapeType(shapeType) {
 	size = { Constants::blockWidthInPixels, Constants::blockWidthInPixels };
+	CalculateSquareValuesBasedOnShapeType(&centerPiece, squares, shapeType, initX, initY);
+}
+
+void Tetromino::CalculateSquareValuesBasedOnShapeType(Vector2** centerPiece, Vector2 squares[], ShapeType shapeType, float initX, float initY) {
 	switch (shapeType) {
 	case ShapeType::ZShape:
 		squares[0] = { initX, initY };
@@ -67,7 +71,7 @@ Tetromino::Tetromino(ShapeType shapeType, Color color, float initX, float initY)
 		squares[1] = { initX, initY };
 		initY += Constants::blockWidthInPixels;
 		squares[2] = { initX, initY };
-		centerPiece = &squares[1];
+		*centerPiece = &squares[1];
 		initX += Constants::blockWidthInPixels;
 		squares[3] = { initX, initY };
 		break;
@@ -76,7 +80,7 @@ Tetromino::Tetromino(ShapeType shapeType, Color color, float initX, float initY)
 		squares[0] = { initX, initY };
 		initX += Constants::blockWidthInPixels;
 		squares[1] = { initX, initY };
-		centerPiece = &squares[1];
+		*centerPiece = &squares[1];
 		initY -= Constants::blockWidthInPixels;
 		squares[2] = { initX, initY };
 		initX += Constants::blockWidthInPixels;
@@ -86,7 +90,7 @@ Tetromino::Tetromino(ShapeType shapeType, Color color, float initX, float initY)
 		squares[0] = { initX, initY };
 		initY += Constants::blockWidthInPixels;
 		squares[1] = { initX, initY };
-		centerPiece = &squares[1];
+		*centerPiece = &squares[1];
 		initY += Constants::blockWidthInPixels;
 		squares[2] = { initX, initY };
 		initX += Constants::blockWidthInPixels;
@@ -96,7 +100,7 @@ Tetromino::Tetromino(ShapeType shapeType, Color color, float initX, float initY)
 		squares[0] = { initX, initY };
 		initY += Constants::blockWidthInPixels;
 		squares[1] = { initX, initY };
-		centerPiece = &squares[1];
+		*centerPiece = &squares[1];
 		initY += Constants::blockWidthInPixels;
 		squares[2] = { initX, initY };
 		initX -= Constants::blockWidthInPixels;
@@ -115,7 +119,7 @@ Tetromino::Tetromino(ShapeType shapeType, Color color, float initX, float initY)
 		squares[0] = { initX, initY };
 		initY += Constants::blockWidthInPixels;
 		squares[1] = { initX, initY };
-		centerPiece = &squares[1];
+		*centerPiece = &squares[1];
 		initY += Constants::blockWidthInPixels;
 		squares[2] = { initX, initY };
 		initY += Constants::blockWidthInPixels;
@@ -125,7 +129,7 @@ Tetromino::Tetromino(ShapeType shapeType, Color color, float initX, float initY)
 		squares[0] = { initX, initY };
 		initX += Constants::blockWidthInPixels;
 		squares[1] = { initX, initY };
-		centerPiece = &squares[1];
+		*centerPiece = &squares[1];
 		initX += Constants::blockWidthInPixels;
 		squares[2] = { initX, initY };
 		initX -= Constants::blockWidthInPixels;

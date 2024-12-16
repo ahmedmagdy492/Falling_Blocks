@@ -11,7 +11,7 @@ extern "C" {
 #include <iostream>
 
 Game::Game() 
-	: activeTetromino(nullptr), isPlaying(false) {
+	: activeTetromino(nullptr), isPlaying(false), nextTetromino(ShapeType::OShape) {
 }
 
 ShapeType Game::GenerateNextTetromino() {
@@ -40,14 +40,14 @@ ShapeType Game::GenerateNextTetromino() {
 	return shapesBag[i++];
 }
 
-Tetromino* Game::CreateTetromino() {
-	ShapeType generatedShape = GenerateNextTetromino();
-	return new Tetromino(generatedShape, GetColorBasedOnShapeType(generatedShape), Constants::tetInitialPositionX, Constants::tetInitialPositionY);
+Tetromino* Game::CreateTetromino(ShapeType shapeType) {
+	return new Tetromino(shapeType, GetColorBasedOnShapeType(shapeType), Constants::tetInitialPositionX, Constants::tetInitialPositionY);
 }
 
 void Game::StartGame() {
 	isPlaying = true;
-	activeTetromino = CreateTetromino();
+	activeTetromino = CreateTetromino(GenerateNextTetromino());
+	nextTetromino = GenerateNextTetromino();
 }
 
 bool Game::GetGameState() {
@@ -65,12 +65,9 @@ void Game::RotateActiveTet() {
 }
 
 void Game::OnTetrominoTouchesGround() {
-	activeTetromino = CreateTetromino();
-
-	// TODO: check for complete lines
+	activeTetromino = CreateTetromino(nextTetromino);
+	nextTetromino = GenerateNextTetromino();
 	ClearCompletedLineIfThereAny();
-
-	// TODO: increament the player's score
 }
 
 void Game::MoveActiveTet(BlocksMoveDirection dir) {
@@ -91,6 +88,34 @@ void Game::MoveActiveTet(BlocksMoveDirection dir) {
 void Game::DrawActiveTet() {
 	if (activeTetromino != nullptr) {
 		activeTetromino->Draw();
+	}
+}
+
+unsigned int Game::GetTetWidth(ShapeType type) {
+	switch (type) {
+	case ShapeType::OShape:
+	case ShapeType::JShape:
+	case ShapeType::LShape:
+		return 2 * Constants::blockWidthInPixels;
+	case ShapeType::IShape:
+		return Constants::blockWidthInPixels;
+	case ShapeType::SShape:
+	case ShapeType::TShape:
+		return 3 * Constants::blockWidthInPixels;
+	default:
+		return 3 * Constants::blockWidthInPixels;
+	}
+}
+
+void Game::DrawNextTet() {
+	Vector2 squares[4];
+	Vector2 centerPiece;
+	Vector2* pCenterPiece;
+	Tetromino::CalculateSquareValuesBasedOnShapeType(&pCenterPiece, squares, nextTetromino, (Constants::screenWidth - GetTetWidth(nextTetromino) + Constants::boardWidth) / 2, 120);
+
+	for (Vector2& sq : squares) {
+		DrawRectangle((int)sq.x, (int)sq.y, Constants::blockWidthInPixels, Constants::blockWidthInPixels, GetColorBasedOnShapeType(nextTetromino));
+		DrawRectangleLines((int)sq.x, (int)sq.y, Constants::blockWidthInPixels, Constants::blockWidthInPixels, BLACK);
 	}
 }
 
@@ -168,5 +193,7 @@ void Game::ClearCompletedLineIfThereAny() {
 }
 
 Game::~Game() {
-
+	if (activeTetromino != nullptr) {
+		delete activeTetromino;
+	}
 }
