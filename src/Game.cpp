@@ -6,7 +6,7 @@
 #include <iostream>
 
 Game::Game() 
-	: activeTetromino(nullptr), isPlaying(false), nextTetromino(ShapeType::OShape) {
+	: activeTetromino(nullptr), nextTetromino(ShapeType::OShape) {
 	sounds[0] = LoadSound("resources/line-clear.ogg");
 	sounds[1] = LoadSound("resources/game-over.ogg");
 	sounds[2] = LoadSound("resources/piece-down.ogg");
@@ -43,17 +43,13 @@ Tetromino* Game::CreateTetromino(ShapeType shapeType) {
 }
 
 void Game::StartGame() {
-	isPlaying = true;
+	curGameState = GameState::Playing;
 	activeTetromino = CreateTetromino(GenerateNextTetromino());
 	nextTetromino = GenerateNextTetromino();
 }
 
-bool Game::GetGameState() {
-	return isPlaying;
-}
-
 void Game::EndGame() {
-	isPlaying = false;
+	curGameState = GameState::GameOver;
 }
 
 void Game::RotateActiveTet() {
@@ -66,6 +62,14 @@ void Game::OnTetrominoTouchesGround() {
 	activeTetromino = CreateTetromino(nextTetromino);
 	nextTetromino = GenerateNextTetromino();
 	ClearCompletedLineIfThereAny();
+
+	for (Vector2& vec : squares) {
+		if ((vec.y - Constants::blockWidthInPixels) <= 0) {
+			SetGameState(GameState::GameOver);
+			PlaySound(sounds[1]);
+			break;
+		}
+	}
 }
 
 void Game::MoveActiveTet(BlocksMoveDirection dir) {
@@ -142,6 +146,20 @@ void Game::ClearCompeleteLine(std::set<float>& xValues, float maxYValue) {
 	}
 }
 
+void Game::ResetGame() {
+	curGameState = GameState::Playing;
+	if (activeTetromino != nullptr) {
+		delete activeTetromino;
+		activeTetromino = nullptr;
+	}
+
+	squares.clear();
+	squaresToRemove.clear();
+	playerScore = 0;
+
+	StartGame();
+}
+
 void Game::ClearCompletedLineIfThereAny() {
 	std::map<float, std::set<float>> yToXValues;
 
@@ -181,7 +199,6 @@ void Game::ClearCompletedLineIfThereAny() {
 
 	// shift down lines above cleared lines
 	if (noClearedLines > 0) {
-		std::cout << __LINE__ << ":GameClass::NoOfLinesCleared: " << static_cast<int>(noClearedLines) << std::endl;
 		float minClearedYValue = *std::min(clearedYValues.begin(), clearedYValues.end());
 		for (Vector2& vec : squares) {
 			if (vec.y < minClearedYValue) {

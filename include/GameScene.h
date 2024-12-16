@@ -10,6 +10,8 @@ private:
 	float fallInterval = 1.0f;
 	Font font;
 
+	void ShowOveralyText(std::string str) const;
+
 public:
 	void Init();
 	void Update();

@@ -9,6 +9,14 @@ void GameScene::Init() {
 	font = LoadFont("resources/good timing bd.otf");
 }
 
+void GameScene::ShowOveralyText(std::string str) const {
+	DrawRectangle(0, 0, Constants::screenWidth, Constants::screenHeight, Color{ 0, 0, 0, 150 });
+
+	const char* gameOverTxt = str.c_str();
+	Vector2 gameOverSize = MeasureTextEx(font, gameOverTxt, 50.0f, 0.0f);
+	DrawTextEx(font, gameOverTxt, { (Constants::screenWidth - gameOverSize.x) / 2, (Constants::screenHeight - gameOverSize.y) / 2 }, gameOverSize.y, 0.0f, RAYWHITE);
+}
+
 void GameScene::Update() {
 	switch (GetKeyPressed()) {
 	case KEY_A:
@@ -38,7 +46,13 @@ void GameScene::Update() {
 }
 
 void GameScene::Render() {
-	Update();
+	if (game.GetGameState() == GameState::Playing) {
+		Update();
+
+		if (IsKeyPressed(KEY_ESCAPE)) {
+			game.SetGameState(GameState::Pause);
+		}
+	}
 
 	game.DrawActiveTet();
 
@@ -51,6 +65,24 @@ void GameScene::Render() {
 	const char* scoreText = TextFormat("Score: %i", game.GetPlayerScore());
 	Vector2 scoreTextSize = MeasureTextEx(font, scoreText, Constants::textFontSize, 0.0f);
 	DrawTextEx(font, scoreText, { (Constants::screenWidth - scoreTextSize.x + Constants::boardWidth) / 2, 20 }, Constants::textFontSize, 0.0f, RAYWHITE);
+
+	// overlays goes here
+	switch (game.GetGameState()) {
+		case GameState::GameOver: {
+			ShowOveralyText("Game Over");
+			if (IsKeyPressed(KEY_ENTER)) {
+				game.ResetGame();
+			}
+			break;
+		}	
+		case GameState::Pause: {
+			ShowOveralyText("Pause");
+			if (GetKeyPressed() == KEY_ESCAPE) {
+				game.SetGameState(GameState::Playing);
+			}
+			break;
+		}
+	}
 }
 
 GameScene::~GameScene() {

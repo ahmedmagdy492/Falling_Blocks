@@ -26,7 +26,18 @@ int main() {
 
 	sceneManager.AddScene("GameScene", &gameScene);
 
+	Sound bgMusic = LoadSound("resources/bg-music.ogg");
+	SetSoundVolume(bgMusic, 0.3);
+	PlaySound(bgMusic);
+
+	SetExitKey(0);
+
 	while (!WindowShouldClose()) {
+
+		if (!IsSoundPlaying(bgMusic)) {
+			PlaySound(bgMusic);
+		}
+
 		ClearBackground(Color{ 26, 35, 126, 1 });
 
 		BeginDrawing();
@@ -35,6 +46,8 @@ int main() {
 	}
 
 	UnloadFont(font);
+
+	UnloadSound(bgMusic);
 
 	CloseAudioDevice();
 

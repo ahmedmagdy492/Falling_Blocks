@@ -9,11 +9,17 @@
 #include <list>
 #include <set>
 
+enum GameState {
+	Playing,
+	GameOver,
+	Pause
+};
+
 class Game {
 private:
 	static const int soundsCount = 3;
 
-	bool isPlaying;
+	GameState curGameState = GameState::Pause;
 	Tetromino* activeTetromino;
 	ShapeType nextTetromino;
 	std::vector<Vector2> squares;
@@ -50,11 +56,18 @@ public:
 	Game();
 
 	void StartGame();
-	bool GetGameState();
 	void EndGame();
 
 	inline unsigned int GetPlayerScore() const {
 		return playerScore;
+	}
+
+	inline void SetGameState(GameState gameState) {
+		curGameState = gameState;
+	}
+
+	inline GameState GetGameState() const {
+		return curGameState;
 	}
 
 	inline unsigned int FindValueInList(std::vector<Vector2>& list, Vector2 value) {
@@ -80,7 +93,7 @@ public:
 		case 3:
 			playerScore += Constants::tripleScoreValue;
 			break;
-		case 4:
+		default:
 			playerScore += Constants::tetrisScoreValue;
 			break;
 		}
@@ -94,6 +107,7 @@ public:
 	void RotateActiveTet();
 	void MoveActiveTet(BlocksMoveDirection dir);
 	unsigned int GetTetWidth(ShapeType type);
+	void ResetGame();
 
 	~Game();
 };
