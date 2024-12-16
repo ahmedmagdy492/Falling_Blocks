@@ -42,7 +42,7 @@ ShapeType Game::GenerateNextTetromino() {
 
 Tetromino* Game::CreateTetromino() {
 	ShapeType generatedShape = GenerateNextTetromino();
-	return new Tetromino(ShapeType::IShape, GetColorBasedOnShapeType(generatedShape), Constants::tetInitialPositionX, Constants::tetInitialPositionY);
+	return new Tetromino(generatedShape, GetColorBasedOnShapeType(generatedShape), Constants::tetInitialPositionX, Constants::tetInitialPositionY);
 }
 
 void Game::StartGame() {

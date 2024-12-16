@@ -10,8 +10,10 @@ int main() {
 	SetTargetFPS(60);
 
 	Game game;
-
 	game.StartGame();
+
+	float fallTimer = 0.0f;
+	float fallInterval = 1.0f;
 
 	while (!WindowShouldClose()) {
 		ClearBackground(BLACK);
@@ -29,7 +31,17 @@ int main() {
 		}
 
 		if (IsKeyDown(KEY_S)) {
+			fallInterval = 0.25f;
+		}
+		if (IsKeyUp(KEY_S)) {
+			fallInterval = 1.0f;
+		}
+
+		fallTimer += GetFrameTime();
+
+		if (fallTimer >= fallInterval) {
 			game.MoveActiveTet(BlocksMoveDirection::MoveDown);
+			fallTimer = 0.0f;
 		}
 
 		BeginDrawing();
