@@ -7,7 +7,6 @@ uniform vec4 color;
 out vec4 FragColor;
 
 void main() {
-    // Normalize pixel coordinates
     vec2 uv = gl_FragCoord.xy / resolution;
     vec4 newColor = vec4(color.xyz / 255.0, 1.0);
 

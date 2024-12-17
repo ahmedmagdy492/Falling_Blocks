@@ -19,7 +19,7 @@ int main() {
 	SetShaderValue(shader, GetShaderLocation(shader, "resolution"), resolution, SHADER_UNIFORM_VEC2);
 
 	BeginDrawing();
-	ClearBackground(Color{ 26, 35, 126, 1 });
+	ClearBackground(BLACK);
 	const char* myName = "Loading...";
 	Vector2 myNameSize = MeasureTextEx(font, myName, 24.0f, 0.0f);
 	DrawTextEx(font, myName, { (Constants::screenWidth - myNameSize.x) / 2, (Constants::screenHeight - myNameSize.y)/2 }, 24.0f, 0.0f, RAYWHITE);
@@ -49,7 +49,7 @@ int main() {
 		}
 
 		BeginDrawing();
-		ClearBackground(Color{ 27, 24, 51, 1 });
+		ClearBackground(BLACK);
 		sceneManager.RenderCurrentScene();
 		EndDrawing();
 	}
