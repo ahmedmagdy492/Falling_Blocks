@@ -149,12 +149,9 @@ void Tetromino::Draw() {
 	BeginShaderMode(*shader);
 	for (int i = 0; i < squaresCount; ++i) {
 		DrawRectangleV(squares[i], size, raylibColor);
+		//DrawRectangleLines(squares[i].x, squares[i].y, Constants::blockWidthInPixels, Constants::blockWidthInPixels, BLACK);
 	}
 	EndShaderMode();
-
-	for (int i = 0; i < squaresCount; ++i) {
-		DrawRectangleLines(squares[i].x, squares[i].y, Constants::blockWidthInPixels, Constants::blockWidthInPixels, BLACK);
-	}
 }
 
 bool Tetromino::IsSquareOverlapWithAnyOtherSquare(Vector2 squarePos, std::vector<Vector2>& existingSquares) {

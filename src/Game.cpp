@@ -31,7 +31,7 @@ ShapeType Game::GenerateNextTetromino() {
 		return shapesBag[i++];
 	}
 	
-	if ((i - 1) < shapesBag.size()) {
+	if (i < shapesBag.size()) {
 		ShapeType selectedShape = shapesBag[i];
 		i = 0;
 		return selectedShape;
@@ -130,13 +130,9 @@ void Game::DrawSquares() {
 	BeginShaderMode(*shader);
 	for (Vector2& sq : squares) {
 		DrawRectangle((int)sq.x, (int)sq.y, Constants::blockWidthInPixels, Constants::blockWidthInPixels, defaultSquaresColor);
-		DrawRectangleLines((int)sq.x, (int)sq.y, Constants::blockWidthInPixels, Constants::blockWidthInPixels, BLACK);
+		//DrawRectangleLines((int)sq.x, (int)sq.y, Constants::blockWidthInPixels, Constants::blockWidthInPixels, BLACK);
 	}
 	EndShaderMode();
-
-	for (Vector2& sq : squares) {
-		DrawRectangleLines((int)sq.x, (int)sq.y, Constants::blockWidthInPixels, Constants::blockWidthInPixels, BLACK);
-	}
 }
 
 void Game::ClearCompeleteLine(std::set<float>& xValues, float maxYValue) {

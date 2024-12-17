@@ -6,6 +6,8 @@
 
 #include "../include/SceneManager.h"
 
+#include "../include/Globals.h"
+
 void GameScene::Init() {
 	game.StartGame();
 	font = LoadFont("resources/good timing bd.otf");
@@ -62,7 +64,12 @@ void GameScene::Render() {
 
 	game.DrawNextTet();
 
+	Shader* shader = (Shader*)globalShader;
+	BeginShaderMode(*shader);
+	float brodersColor[] = { RAYWHITE.r, RAYWHITE.g, RAYWHITE.b, 1.0 };
+	SetShaderValue(*shader, GetShaderLocation(*shader, "color"), brodersColor, SHADER_UNIFORM_VEC4);
 	DrawRectangleLines(0, 0, Constants::boardWidth, Constants::boardHeight, RAYWHITE);
+	EndShaderMode();
 
 	const char* scoreText = TextFormat("Score: %i", game.GetPlayerScore());
 	Vector2 scoreTextSize = MeasureTextEx(font, scoreText, Constants::textFontSize, 0.0f);
