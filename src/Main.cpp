@@ -1,15 +1,22 @@
-extern "C" {
-#include <raylib.h>
-}
+
 
 #include "../include/GameScene.h"
 #include "../include/SceneManager.h"
+
+#include "../include/Globals.h"
+
+void* globalShader = 0;
 
 int main() {
 	InitWindow(Constants::screenWidth, Constants::screenHeight, "Falling Blocks");
 	SetTargetFPS(60);
 
 	Font font = LoadFont("resources/good timing bd.otf");
+
+	Shader shader = LoadShader(0, "resources/fragment.shader");
+	globalShader = &shader;
+	float resolution[] = { Constants::screenWidth, Constants::screenHeight };
+	SetShaderValue(shader, GetShaderLocation(shader, "resolution"), resolution, SHADER_UNIFORM_VEC2);
 
 	BeginDrawing();
 	ClearBackground(Color{ 26, 35, 126, 1 });
@@ -20,32 +27,36 @@ int main() {
 
 	InitAudioDevice();
 
+	SceneManager sceneManager;
+
 	GameScene gameScene;
 	gameScene.Init();
-	SceneManager sceneManager;
 
 	sceneManager.AddScene("GameScene", &gameScene);
 
 	Sound bgMusic = LoadSound("resources/bg-music.ogg");
-	SetSoundVolume(bgMusic, 0.3);
+	SetSoundVolume(bgMusic, 0.3f);
 	PlaySound(bgMusic);
 
 	SetExitKey(0);
 
 	while (!WindowShouldClose()) {
+		float time = static_cast<float>(GetTime());
+		SetShaderValue(shader, GetShaderLocation(shader, "time"), &time, SHADER_UNIFORM_FLOAT);
 
 		if (!IsSoundPlaying(bgMusic)) {
 			PlaySound(bgMusic);
 		}
 
-		ClearBackground(Color{ 26, 35, 126, 1 });
-
 		BeginDrawing();
+		ClearBackground(Color{ 27, 24, 51, 1 });
 		sceneManager.RenderCurrentScene();
 		EndDrawing();
 	}
 
 	UnloadFont(font);
+
+	UnloadShader(shader);
 
 	UnloadSound(bgMusic);
 

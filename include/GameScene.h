@@ -3,6 +3,8 @@
 #include "Scene.h"
 #include "Game.h"
 
+#include "SceneManager.h"
+
 class GameScene : public Scene {
 private:
 	Game game;

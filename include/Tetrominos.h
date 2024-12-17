@@ -52,6 +52,25 @@ private:
 	float GetMinYValue();
 	bool IsSquareOverlapWithAnyOtherSquare(Vector2 squarePos, std::vector<Vector2>& existingSquares);
 
+	inline Color GetColorBasedOnShapeType(ShapeType shapeType) const {
+		switch (shapeType) {
+		case ShapeType::IShape:
+			return SKYBLUE;
+		case ShapeType::JShape:
+			return BLUE;
+		case ShapeType::LShape:
+			return ORANGE;
+		case ShapeType::OShape:
+			return YELLOW;
+		case ShapeType::SShape:
+			return DARKGREEN;
+		case ShapeType::ZShape:
+			return RED;
+		}
+
+		return MAGENTA;
+	}
+
 public:
 	Color color;
 	ShapeType shapeType;

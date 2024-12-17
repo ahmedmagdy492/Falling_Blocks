@@ -1,6 +1,8 @@
 
 #include "../include/SceneManager.h"
 
+#include <raylib.h>
+
 void SceneManager::AddScene(std::string sceneName, Scene* scene) {
 	if (scenes.find(sceneName) == scenes.end()) {
 		scenes.insert({ sceneName, scene });

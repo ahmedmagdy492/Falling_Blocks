@@ -161,6 +161,7 @@
   <ItemGroup>
     <ClInclude Include="include\Game.h" />
     <ClInclude Include="include\GameScene.h" />
+    <ClInclude Include="include\Globals.h" />
     <ClInclude Include="include\Scene.h" />
     <ClInclude Include="include\SceneManager.h" />
     <ClInclude Include="include\Tetrominos.h" />

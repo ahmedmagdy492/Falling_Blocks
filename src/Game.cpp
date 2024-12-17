@@ -1,6 +1,8 @@
 #include "../include/Game.h"
 #include "../include/Tetrominos.h"
 
+#include "../include/Globals.h"
+
 #include <vector>
 #include <algorithm>
 #include <iostream>
@@ -122,8 +124,17 @@ void Game::DrawNextTet() {
 }
 
 void Game::DrawSquares() {
+	Shader* shader = (Shader*)globalShader;
+	float color[] = { defaultSquaresColor.r, defaultSquaresColor.g, defaultSquaresColor.b, 1.0f };
+	SetShaderValue(*shader, GetShaderLocation(*shader, "color"), color, SHADER_UNIFORM_VEC4);
+	BeginShaderMode(*shader);
 	for (Vector2& sq : squares) {
 		DrawRectangle((int)sq.x, (int)sq.y, Constants::blockWidthInPixels, Constants::blockWidthInPixels, defaultSquaresColor);
+		DrawRectangleLines((int)sq.x, (int)sq.y, Constants::blockWidthInPixels, Constants::blockWidthInPixels, BLACK);
+	}
+	EndShaderMode();
+
+	for (Vector2& sq : squares) {
 		DrawRectangleLines((int)sq.x, (int)sq.y, Constants::blockWidthInPixels, Constants::blockWidthInPixels, BLACK);
 	}
 }

@@ -4,6 +4,8 @@ extern "C" {
 }
 
 #include "../include/Tetrominos.h"
+#include "../include/Globals.h"
+
 #include <iostream>
 #include <vector>
 #include <algorithm>
@@ -140,8 +142,17 @@ void Tetromino::CalculateSquareValuesBasedOnShapeType(Vector2** centerPiece, Vec
 }
 
 void Tetromino::Draw() {
+	Shader* shader = (Shader*)globalShader;
+	Color raylibColor = GetColorBasedOnShapeType(shapeType);
+	float color[] = { raylibColor.r, raylibColor.g, raylibColor.b, 1.0f };
+	SetShaderValue(*shader, GetShaderLocation(*shader, "color"), color, SHADER_UNIFORM_VEC4);
+	BeginShaderMode(*shader);
 	for (int i = 0; i < squaresCount; ++i) {
-		DrawRectangleV(squares[i], size, color);
+		DrawRectangleV(squares[i], size, raylibColor);
+	}
+	EndShaderMode();
+
+	for (int i = 0; i < squaresCount; ++i) {
 		DrawRectangleLines(squares[i].x, squares[i].y, Constants::blockWidthInPixels, Constants::blockWidthInPixels, BLACK);
 	}
 }
