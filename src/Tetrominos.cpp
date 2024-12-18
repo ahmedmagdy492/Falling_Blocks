@@ -1,6 +1,7 @@
 extern "C" {
 	#include <raylib.h>
 	#include <raymath.h>
+	#include <rlgl.h>
 }
 
 #include "../include/Tetrominos.h"
@@ -146,10 +147,15 @@ void Tetromino::Draw() {
 	Color raylibColor = GetColorBasedOnShapeType(shapeType);
 	float color[] = { raylibColor.r, raylibColor.g, raylibColor.b, 1.0f };
 	SetShaderValue(*shader, GetShaderLocation(*shader, "color"), color, SHADER_UNIFORM_VEC4);
+
+	for (int i = 0; i < squaresCount; ++i) {
+		DrawRectangleV(squares[i], size, BLACK);
+	}
+
+	rlSetLineWidth(12.0);
 	BeginShaderMode(*shader);
 	for (int i = 0; i < squaresCount; ++i) {
-		DrawRectangleV(squares[i], size, raylibColor);
-		//DrawRectangleLines(squares[i].x, squares[i].y, Constants::blockWidthInPixels, Constants::blockWidthInPixels, BLACK);
+		DrawRectangleLines(squares[i].x, squares[i].y, Constants::blockWidthInPixels, Constants::blockWidthInPixels, raylibColor);
 	}
 	EndShaderMode();
 }

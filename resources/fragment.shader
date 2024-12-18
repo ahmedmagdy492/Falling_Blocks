@@ -3,11 +3,12 @@
 uniform float time;
 uniform vec2 resolution;
 uniform vec4 color;
+uniform sampler2D bloomTexture;
 
 out vec4 FragColor;
 
 void main() {
-    vec2 uv = gl_FragCoord.xy / resolution;
+	vec2 uv = gl_FragCoord.xy / resolution;
     vec4 newColor = vec4(color.xyz / 255.0, 1.0);
 
     float scaler = 12.0;

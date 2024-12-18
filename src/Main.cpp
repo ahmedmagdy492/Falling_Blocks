@@ -18,6 +18,9 @@ int main() {
 	float resolution[] = { Constants::screenWidth, Constants::screenHeight };
 	SetShaderValue(shader, GetShaderLocation(shader, "resolution"), resolution, SHADER_UNIFORM_VEC2);
 
+	Texture2D bloomTexture = LoadTexture("resources/bloom.png");
+	SetShaderValueTexture(shader, GetShaderLocation(shader, "bloomTexture"), bloomTexture);
+
 	BeginDrawing();
 	ClearBackground(BLACK);
 	const char* myName = "Loading...";
@@ -59,6 +62,8 @@ int main() {
 	UnloadShader(shader);
 
 	UnloadSound(bgMusic);
+
+	UnloadTexture(bloomTexture);
 
 	CloseAudioDevice();
 
