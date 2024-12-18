@@ -1,9 +1,12 @@
 
 
+#include "../include/MenuScene.h"
 #include "../include/GameScene.h"
 #include "../include/SceneManager.h"
 
 #include "../include/Globals.h"
+
+#include "../include/UI/TextDisplay.h"
 
 void* globalShader = 0;
 
@@ -13,6 +16,14 @@ int main() {
 
 	Font font = LoadFont("resources/good timing bd.otf");
 
+	Vector2 myNameSize = MeasureTextEx(font, "Ahmed Magdy", 24.0f, 0.0f);
+	TextDisplayUI loadingText("Ahmed Magdy", { (Constants::screenWidth - myNameSize.x) / 2, (Constants::screenHeight - myNameSize.y) / 2 }, WHITE, font, Constants::normalTextFontSize);
+
+	BeginDrawing();
+	ClearBackground(BLACK);
+	loadingText.Draw();
+	EndDrawing();
+
 	Shader shader = LoadShader(0, "resources/fragment.shader");
 	globalShader = &shader;
 	float resolution[] = { Constants::screenWidth, Constants::screenHeight };
@@ -21,20 +32,17 @@ int main() {
 	Texture2D bloomTexture = LoadTexture("resources/bloom.png");
 	SetShaderValueTexture(shader, GetShaderLocation(shader, "bloomTexture"), bloomTexture);
 
-	BeginDrawing();
-	ClearBackground(BLACK);
-	const char* myName = "Loading...";
-	Vector2 myNameSize = MeasureTextEx(font, myName, 24.0f, 0.0f);
-	DrawTextEx(font, myName, { (Constants::screenWidth - myNameSize.x) / 2, (Constants::screenHeight - myNameSize.y)/2 }, 24.0f, 0.0f, RAYWHITE);
-	EndDrawing();
-
 	InitAudioDevice();
 
 	SceneManager sceneManager;
 
-	GameScene gameScene;
+	MenuScene menuScene(&sceneManager);
+	menuScene.Init();
+
+	GameScene gameScene(&sceneManager);
 	gameScene.Init();
 
+	sceneManager.AddScene("MenuScene", &menuScene);
 	sceneManager.AddScene("GameScene", &gameScene);
 
 	Sound bgMusic = LoadSound("resources/bg-music.ogg");

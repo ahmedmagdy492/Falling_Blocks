@@ -8,16 +8,25 @@
 
 #include "../include/Globals.h"
 
-void GameScene::Init() {
-	game.StartGame();
+#include "../include//UI/TextDisplay.h"
+
+GameScene::GameScene(SceneManager* manager) : manager(manager) {
 	font = LoadFont("resources/good timing bd.otf");
 }
 
-void GameScene::ShowOveralyText(std::string str) const {
-	const char* gameOverTxt = str.c_str();
-	Vector2 gameOverSize = MeasureTextEx(font, gameOverTxt, 50.0f, 0.0f);
+void GameScene::Init() {
+	game.StartGame();
 
-	DrawTextEx(font, gameOverTxt, { (Constants::screenWidth - gameOverSize.x) / 2, (Constants::screenHeight - gameOverSize.y) / 2 }, gameOverSize.y, 0.0f, RAYWHITE);
+	Vector2 gameOverSize = MeasureTextEx(font, "Game Over", 50.0f, 0.0f);
+	gameOverText = new TextDisplayUI("Game Over", { (Constants::screenWidth - gameOverSize.x) / 2, (Constants::screenHeight - gameOverSize.y) / 2 }, WHITE, font, 50.0f);
+	gameOverText->EnableHasOverlayBackground({ 0.0f, 0.0f }, { Constants::screenWidth, Constants::screenHeight }, Color{ BLACK.r, BLACK.g, BLACK.b, 150 });
+
+	Vector2 pauseSize = MeasureTextEx(font, "Pause", 50.0f, 0.0f);
+	pauseText = new TextDisplayUI("Pause", { (Constants::screenWidth - pauseSize.x) / 2, (Constants::screenHeight - pauseSize.y) / 2 }, WHITE, font, 50.0f);
+	pauseText->EnableHasOverlayBackground({ 0.0f, 0.0f }, { Constants::screenWidth, Constants::screenHeight }, Color{ BLACK.r, BLACK.g, BLACK.b, 150 });
+
+	Vector2 scoreTextSize = MeasureTextEx(font, "Score: 0", Constants::normalTextFontSize, 0.0f);
+	scoreText = new TextDisplayUI("Score: 0", { (Constants::screenWidth - scoreTextSize.x + Constants::boardWidth) / 2, 20 }, WHITE, font, Constants::normalTextFontSize);
 }
 
 void GameScene::Update() {
@@ -72,21 +81,20 @@ void GameScene::Render() {
 	EndShaderMode();
 
 	const char* scoreText = TextFormat("Score: %i", game.GetPlayerScore());
-	Vector2 scoreTextSize = MeasureTextEx(font, scoreText, Constants::textFontSize, 0.0f);
-
-	DrawTextEx(font, scoreText, { (Constants::screenWidth - scoreTextSize.x + Constants::boardWidth) / 2, 20 }, Constants::textFontSize, 0.0f, RAYWHITE);
+	this->scoreText->SetText(scoreText);
+	this->scoreText->Draw();
 
 	// overlays goes here
 	switch (game.GetGameState()) {
 		case GameState::GameOver: {
-			ShowOveralyText("Game Over");
+			gameOverText->Draw();
 			if (IsKeyPressed(KEY_ENTER)) {
 				game.ResetGame();
 			}
 			break;
 		}	
 		case GameState::Pause: {
-			ShowOveralyText("Pause");
+			pauseText->Draw();
 			if (GetKeyPressed() == KEY_ESCAPE) {
 				game.SetGameState(GameState::Playing);
 			}
@@ -97,4 +105,8 @@ void GameScene::Render() {
 
 GameScene::~GameScene() {
 	UnloadFont(font);
+
+	delete gameOverText;
+	delete pauseText;
+	delete scoreText;
 }

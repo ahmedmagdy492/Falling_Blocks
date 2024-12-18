@@ -155,16 +155,20 @@
     <ClCompile Include="src\Game.cpp" />
     <ClCompile Include="src\GameScene.cpp" />
     <ClCompile Include="src\Main.cpp" />
+    <ClCompile Include="src\MenuScene.cpp" />
     <ClCompile Include="src\SceneManager.cpp" />
     <ClCompile Include="src\Tetrominos.cpp" />
+    <ClCompile Include="src\UI\TextDisplay.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\Game.h" />
     <ClInclude Include="include\GameScene.h" />
     <ClInclude Include="include\Globals.h" />
+    <ClInclude Include="include\MenuScene.h" />
     <ClInclude Include="include\Scene.h" />
     <ClInclude Include="include\SceneManager.h" />
     <ClInclude Include="include\Tetrominos.h" />
+    <ClInclude Include="include\UI\TextDisplay.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -6,7 +6,7 @@
 struct Constants {
 	static const int screenWidth = 1080;
 	static const int screenHeight = 920;
-	static const int textFontSize = 24;
+	static const int normalTextFontSize = 24;
 
 	static const int blocksWidth = 10;
 	static const int blocksHeight = 20;

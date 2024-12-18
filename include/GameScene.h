@@ -5,16 +5,21 @@
 
 #include "SceneManager.h"
 
+#include "UI/TextDisplay.h"
+
 class GameScene : public Scene {
 private:
 	Game game;
 	float fallTimer = 0.0f;
 	float fallInterval = 1.0f;
 	Font font;
+	SceneManager* manager;
 
-	void ShowOveralyText(std::string str) const;
+	TextDisplayUI* gameOverText = nullptr, *pauseText = nullptr, *scoreText = nullptr;
 
 public:
+	GameScene(SceneManager* manager);
+
 	void Init();
 	void Update();
 	void Render();
