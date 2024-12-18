@@ -9,6 +9,7 @@
 #include "../include/UI/TextDisplay.h"
 
 void* globalShader = 0;
+bool shouldWindowClose = false;
 
 int main() {
 	InitWindow(Constants::screenWidth, Constants::screenHeight, "Falling Blocks");
@@ -52,6 +53,9 @@ int main() {
 	SetExitKey(0);
 
 	while (!WindowShouldClose()) {
+		if (shouldWindowClose) {
+			break;
+		}
 		float time = static_cast<float>(GetTime());
 		SetShaderValue(shader, GetShaderLocation(shader, "time"), &time, SHADER_UNIFORM_FLOAT);
 

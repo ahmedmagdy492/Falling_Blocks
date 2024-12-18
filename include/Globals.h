@@ -5,3 +5,4 @@ extern "C" {
 }
 
 extern void* globalShader;
+extern bool shouldWindowClose;

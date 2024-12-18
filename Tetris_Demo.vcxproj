@@ -152,12 +152,14 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="include\UI\ButtonUI.h" />
     <ClCompile Include="src\Game.cpp" />
     <ClCompile Include="src\GameScene.cpp" />
     <ClCompile Include="src\Main.cpp" />
     <ClCompile Include="src\MenuScene.cpp" />
     <ClCompile Include="src\SceneManager.cpp" />
     <ClCompile Include="src\Tetrominos.cpp" />
+    <ClCompile Include="src\UI\ButtonUI.cpp" />
     <ClCompile Include="src\UI\TextDisplay.cpp" />
   </ItemGroup>
   <ItemGroup>

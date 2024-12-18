@@ -3,7 +3,23 @@
 
 #include "../include/Tetrominos.h"
 
+#include "../include/Globals.h"
+
 #include <vector>
+
+static bool isStartGameClicked = false;
+
+static void onStartGameButtonClick() {
+	if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
+		isStartGameClicked = true;
+	}
+}
+
+static void onExitGameButtonClick() {
+	if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
+		shouldWindowClose = true;
+	}
+}
 
 MenuScene::MenuScene(SceneManager* manager) : manager(manager) {
 	font = LoadFont("resources/good timing bd.otf");
@@ -22,26 +38,36 @@ void MenuScene::Init() {
 		
 		tets.push_back(tet);
 	}
+
+	startGameBtn = new ButtonUI("Start Game", font, Constants::aboveNormalTextFontSize, {0.0f, 0.0f}, onStartGameButtonClick);
+	startGameBtn->CenterButton(Constants::screenWidth, Constants::screenHeight);
+	exitGameBtn = new ButtonUI("Exit", font, Constants::aboveNormalTextFontSize, {0.0f, 0.0f}, onExitGameButtonClick);
+	exitGameBtn->PlaceBeneath(*startGameBtn, 10.0f);
 }
 
 void MenuScene::Update() {
-	switch (GetKeyPressed()) {
-	
+	if (isStartGameClicked) {
+		manager->SwitchScene("GameScene");
 	}
 }
 
 void MenuScene::Render() {
+	Update();
 
 	for (Tetromino& tet : tets) {
 		tet.Draw();
 	}
 
-	// text rendering
+	// UI rendering
 	titleText->Draw();
+	startGameBtn->Draw();
+	exitGameBtn->Draw();
 }
 
 MenuScene::~MenuScene() {
 	UnloadFont(font);
 
 	delete titleText;
+	delete startGameBtn;
+	delete exitGameBtn;
 }
