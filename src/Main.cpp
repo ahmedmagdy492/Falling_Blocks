@@ -10,6 +10,8 @@
 
 void* globalShader = 0;
 bool shouldWindowClose = false;
+unsigned int levelNo = 1;
+unsigned long long clearedLines = 0;
 
 int main() {
 	InitWindow(Constants::screenWidth, Constants::screenHeight, "Falling Blocks");
@@ -25,13 +27,13 @@ int main() {
 	loadingText.Draw();
 	EndDrawing();
 
-	Shader shader = LoadShader(0, "resources/fragment.shader");
+	Shader shader = LoadShader(0, "resources/fragment0.shader");
 	globalShader = &shader;
 	float resolution[] = { Constants::screenWidth, Constants::screenHeight };
 	SetShaderValue(shader, GetShaderLocation(shader, "resolution"), resolution, SHADER_UNIFORM_VEC2);
 
-	Texture2D bloomTexture = LoadTexture("resources/bloom.png");
-	SetShaderValueTexture(shader, GetShaderLocation(shader, "bloomTexture"), bloomTexture);
+	levelNo = 1;
+	SetShaderValue(shader, GetShaderLocation(shader, "levelNo"), &levelNo, SHADER_UNIFORM_INT);
 
 	InitAudioDevice();
 
@@ -75,8 +77,6 @@ int main() {
 	UnloadShader(shader);
 
 	UnloadSound(bgMusic);
-
-	UnloadTexture(bloomTexture);
 
 	CloseAudioDevice();
 

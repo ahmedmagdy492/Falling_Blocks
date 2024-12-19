@@ -6,3 +6,5 @@ extern "C" {
 
 extern void* globalShader;
 extern bool shouldWindowClose;
+extern unsigned int levelNo;
+extern unsigned long long clearedLines;

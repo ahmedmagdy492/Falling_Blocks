@@ -28,6 +28,7 @@ private:
 	unsigned int playerScore = 0;
 	Sound sounds[soundsCount];
 	int colorShaderLocation = -1;
+	int levelNoShaderLocation = -1;
 
 	ShapeType GenerateNextTetromino();
 

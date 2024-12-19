@@ -17,6 +17,7 @@ Game::Game()
 
 	Shader* shader = (Shader*)globalShader;
 	colorShaderLocation = GetShaderLocation(*shader, "color");
+	levelNoShaderLocation = GetShaderLocation(*shader, "levelNo");
 }
 
 ShapeType Game::GenerateNextTetromino() {
@@ -172,6 +173,7 @@ void Game::ResetGame() {
 	squares.clear();
 	squaresToRemove.clear();
 	playerScore = 0;
+	levelNo = 0;
 
 	StartGame();
 }
@@ -227,6 +229,12 @@ void Game::ClearCompletedLineIfThereAny() {
 
 	// shift down lines above cleared lines
 	if (noClearedLines > 0) {
+		clearedLines += noClearedLines;
+
+		levelNo = 1 + (clearedLines / Constants::levelSwitchEveryNLines);
+		Shader* shader = (Shader*)globalShader;
+		SetShaderValue(*shader, levelNoShaderLocation, &levelNo, SHADER_UNIFORM_INT);
+
 		if (AreAllValuesConscutive(clearedYValues)) {
 			float minClearedYValue = *std::min(clearedYValues.begin(), clearedYValues.end());
 			for (Vector2& vec : squares) {

@@ -29,6 +29,9 @@ void GameScene::Init() {
 
 	Vector2 scoreTextSize = MeasureTextEx(font, "Score: 0", Constants::normalTextFontSize, 0.0f);
 	scoreText = new TextDisplayUI("Score: 0", { (Constants::screenWidth - scoreTextSize.x + Constants::boardWidth) / 2, 20 }, WHITE, font, Constants::normalTextFontSize);
+
+	Vector2 levelTextSize = MeasureTextEx(font, TextFormat("Level %i", levelNo), Constants::aboveNormalTextFontSize, 0.0f);
+	curLevelText = new TextDisplayUI(TextFormat("Level %i", levelNo), { (Constants::screenWidth - levelTextSize.x + Constants::boardWidth) / 2 , Constants::screenHeight / 2 }, WHITE, font, Constants::aboveNormalTextFontSize);
 }
 
 void GameScene::Update() {
@@ -69,6 +72,14 @@ void GameScene::Render() {
 		}
 	}
 
+	const char* scoreText = TextFormat("Score: %i", game.GetPlayerScore());
+	this->scoreText->SetText(scoreText);
+	this->scoreText->Draw();
+
+	const char* levelText = TextFormat("Level %i", levelNo);
+	this->curLevelText->SetText(levelText);
+	this->curLevelText->Draw();
+
 	game.DrawActiveTet();
 
 	game.DrawSquares();
@@ -81,10 +92,6 @@ void GameScene::Render() {
 	SetShaderValue(*shader, colorUniformLocation, brodersColor, SHADER_UNIFORM_VEC4);
 	DrawRectangleLines(0, 0, Constants::boardWidth, Constants::boardHeight, RAYWHITE);
 	EndShaderMode();
-
-	const char* scoreText = TextFormat("Score: %i", game.GetPlayerScore());
-	this->scoreText->SetText(scoreText);
-	this->scoreText->Draw();
 
 	// overlays goes here
 	switch (game.GetGameState()) {
@@ -111,4 +118,5 @@ GameScene::~GameScene() {
 	delete gameOverText;
 	delete pauseText;
 	delete scoreText;
+	delete curLevelText;
 }

@@ -16,7 +16,7 @@ private:
 	int colorUniformLocation = -1;
 	SceneManager* manager;
 
-	TextDisplayUI* gameOverText = nullptr, *pauseText = nullptr, *scoreText = nullptr;
+	TextDisplayUI* gameOverText = nullptr, * pauseText = nullptr, * scoreText = nullptr, * curLevelText = nullptr;
 
 public:
 	GameScene(SceneManager* manager);

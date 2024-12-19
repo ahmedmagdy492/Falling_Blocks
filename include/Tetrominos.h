@@ -24,6 +24,8 @@ struct Constants {
 	static const int doubleScoreValue = 100;
 	static const int tripleScoreValue = 300;
 	static const int tetrisScoreValue = 1200;
+
+	static const int levelSwitchEveryNLines = 2;
 };
 
 enum ShapeType {
