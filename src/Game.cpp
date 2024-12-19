@@ -6,12 +6,17 @@
 #include <vector>
 #include <algorithm>
 #include <iostream>
+#include <list>
+#include <set>
 
 Game::Game() 
 	: activeTetromino(nullptr), nextTetromino(ShapeType::OShape) {
 	sounds[0] = LoadSound("resources/line-clear.ogg");
 	sounds[1] = LoadSound("resources/game-over.ogg");
 	sounds[2] = LoadSound("resources/piece-down.ogg");
+
+	Shader* shader = (Shader*)globalShader;
+	colorShaderLocation = GetShaderLocation(*shader, "color");
 }
 
 ShapeType Game::GenerateNextTetromino() {
@@ -126,7 +131,7 @@ void Game::DrawNextTet() {
 void Game::DrawSquares() {
 	Shader* shader = (Shader*)globalShader;
 	float color[] = { defaultSquaresColor.r, defaultSquaresColor.g, defaultSquaresColor.b, 1.0f };
-	SetShaderValue(*shader, GetShaderLocation(*shader, "color"), color, SHADER_UNIFORM_VEC4);
+	SetShaderValue(*shader, colorShaderLocation, color, SHADER_UNIFORM_VEC4);
 
 	BeginShaderMode(*shader);
 	for (Vector2& sq : squares) {
@@ -171,6 +176,18 @@ void Game::ResetGame() {
 	StartGame();
 }
 
+static bool AreAllValuesConscutive(std::vector<float>& values) {
+	std::sort(values.begin(), values.end());
+
+	for (int i = 1; i < values.size(); ++i) {
+		if (values[i] != (values[i-1] + Constants::blockWidthInPixels)) {
+			return false;
+		}
+	}
+
+	return true;
+}
+
 void Game::ClearCompletedLineIfThereAny() {
 	std::map<float, std::set<float>> yToXValues;
 
@@ -210,10 +227,26 @@ void Game::ClearCompletedLineIfThereAny() {
 
 	// shift down lines above cleared lines
 	if (noClearedLines > 0) {
-		float minClearedYValue = *std::min(clearedYValues.begin(), clearedYValues.end());
-		for (Vector2& vec : squares) {
-			if (vec.y < minClearedYValue) {
-				vec.y += Constants::blockWidthInPixels * noClearedLines;
+		if (AreAllValuesConscutive(clearedYValues)) {
+			float minClearedYValue = *std::min(clearedYValues.begin(), clearedYValues.end());
+			for (Vector2& vec : squares) {
+				if (vec.y < minClearedYValue) {
+					vec.y += Constants::blockWidthInPixels * noClearedLines;
+				}
+			}
+		}
+		else {
+			int i = 0;
+			std::list<float> clearedYList(clearedYValues.begin(), clearedYValues.end());
+			while (i < noClearedLines) {
+				float minClearedYValue = *std::min_element(clearedYList.begin(), clearedYList.end());
+				for (Vector2& vec : squares) {
+					if (vec.y < minClearedYValue) {
+						vec.y += Constants::blockWidthInPixels;
+					}
+				}
+				clearedYList.remove(minClearedYValue);
+				++i;
 			}
 		}
 

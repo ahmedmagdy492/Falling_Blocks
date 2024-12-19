@@ -12,6 +12,8 @@
 
 GameScene::GameScene(SceneManager* manager) : manager(manager) {
 	font = LoadFont("resources/good timing bd.otf");
+	Shader* shader = (Shader*)globalShader;
+	colorUniformLocation = GetShaderLocation(*shader, "color");
 }
 
 void GameScene::Init() {
@@ -76,7 +78,7 @@ void GameScene::Render() {
 	Shader* shader = (Shader*)globalShader;
 	BeginShaderMode(*shader);
 	float brodersColor[] = { RAYWHITE.r, RAYWHITE.g, RAYWHITE.b, 1.0 };
-	SetShaderValue(*shader, GetShaderLocation(*shader, "color"), brodersColor, SHADER_UNIFORM_VEC4);
+	SetShaderValue(*shader, colorUniformLocation, brodersColor, SHADER_UNIFORM_VEC4);
 	DrawRectangleLines(0, 0, Constants::boardWidth, Constants::boardHeight, RAYWHITE);
 	EndShaderMode();
 

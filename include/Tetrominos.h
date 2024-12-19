@@ -45,6 +45,7 @@ enum BlocksMoveDirection : unsigned char {
 class Tetromino {
 private:
 	static const int squaresCount = 4;
+	int colorUniformLocation = -1;
 
 	double ConvertDegreesToRadians(int deg);
 	float GetMinXValue();

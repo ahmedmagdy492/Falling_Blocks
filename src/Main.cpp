@@ -51,13 +51,14 @@ int main() {
 	PlaySound(bgMusic);
 
 	SetExitKey(0);
+	int timeUniformLocation = GetShaderLocation(shader, "time");
 
 	while (!WindowShouldClose()) {
 		if (shouldWindowClose) {
 			break;
 		}
 		float time = static_cast<float>(GetTime());
-		SetShaderValue(shader, GetShaderLocation(shader, "time"), &time, SHADER_UNIFORM_FLOAT);
+		SetShaderValue(shader, timeUniformLocation, &time, SHADER_UNIFORM_FLOAT);
 
 		if (!IsSoundPlaying(bgMusic)) {
 			PlaySound(bgMusic);

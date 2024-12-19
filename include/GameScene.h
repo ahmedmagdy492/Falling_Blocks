@@ -13,6 +13,7 @@ private:
 	float fallTimer = 0.0f;
 	float fallInterval = 1.0f;
 	Font font;
+	int colorUniformLocation = -1;
 	SceneManager* manager;
 
 	TextDisplayUI* gameOverText = nullptr, *pauseText = nullptr, *scoreText = nullptr;

@@ -27,6 +27,7 @@ private:
 	Color defaultSquaresColor = DARKGRAY;
 	unsigned int playerScore = 0;
 	Sound sounds[soundsCount];
+	int colorShaderLocation = -1;
 
 	ShapeType GenerateNextTetromino();
 

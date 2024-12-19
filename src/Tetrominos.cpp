@@ -64,6 +64,9 @@ Tetromino::Tetromino(ShapeType shapeType, Color color, float initX, float initY)
 	color(color), shapeType(shapeType) {
 	size = { Constants::blockWidthInPixels, Constants::blockWidthInPixels };
 	CalculateSquareValuesBasedOnShapeType(&centerPiece, squares, shapeType, initX, initY);
+
+	Shader* shader = (Shader*)globalShader;
+	colorUniformLocation = GetShaderLocation(*shader, "color");
 }
 
 void Tetromino::CalculateSquareValuesBasedOnShapeType(Vector2** centerPiece, Vector2 squares[], ShapeType shapeType, float initX, float initY) {
@@ -146,7 +149,7 @@ void Tetromino::Draw() {
 	Shader* shader = (Shader*)globalShader;
 	Color raylibColor = GetColorBasedOnShapeType(shapeType);
 	float color[] = { raylibColor.r, raylibColor.g, raylibColor.b, 1.0f };
-	SetShaderValue(*shader, GetShaderLocation(*shader, "color"), color, SHADER_UNIFORM_VEC4);
+	SetShaderValue(*shader, colorUniformLocation, color, SHADER_UNIFORM_VEC4);
 
 	for (int i = 0; i < squaresCount; ++i) {
 		DrawRectangleV(squares[i], size, BLACK);
